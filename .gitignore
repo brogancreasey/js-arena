@@ -1,0 +1,5 @@
+### Helper batch files ###
+*.bat
+### SASS ###
+.sass-cache/
+*.css.map

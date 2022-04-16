@@ -1,0 +1,23 @@
+canvas{
+    position: absolute;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+#instructions{
+    left:0;
+    top: 0;
+    padding: 50px;
+    position: absolute;
+}
+
+html, body {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
