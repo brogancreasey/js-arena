@@ -95,7 +95,8 @@ const componentFactory = {
             new Health(),
             new HealthDisplay(),
             new Dead(),
-            new Lifetime()
+            new Lifetime(),
+            new Attack()
         ];
     }
 }

@@ -33,6 +33,20 @@ const entityFactory = {
         return entity;
     },
 
+    makeCircle : function(componentPool, x, y, radius, color) {
+        const id = componentPool.getNextId();
+        const entity = new Entity(id);
+        entity.addComponent(Position.flag | Renderable.flag);
+        const entityData = componentPool.getComponentData(id);
+        entityData[Position.index].x = x;
+        entityData[Position.index].y = y;
+        entityData[Renderable.index].width = radius;
+        entityData[Renderable.index].height = radius;
+        entityData[Renderable.index].color = color;
+        entityData[Renderable.index].type = "CIRCLE";
+        return entity;
+    },
+
     makeMover : function(componentPool, x, y, width, height, color, vX, vY) {
         const entity = this.makeRect(componentPool, x, y, width, height, color);
         entity.addComponent(Velocity.flag);

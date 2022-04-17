@@ -9,9 +9,9 @@ function render(context, scene, componentPool) {
     const renderMask = Position.flag | Renderable.flag;
     for(const e of getEntitiesWithComponents(scene, renderMask)) {
         const data = componentPool.getComponentData(e.id);
-        if(data[Renderable.index].type === 'RECT'){
-            const position = data[Position.index]
-            const renderable = data[Renderable.index];
+        const position = data[Position.index]
+        const renderable = data[Renderable.index];
+        if(renderable.type === 'RECT'){
             context.fillStyle = renderable.color;
             context.fillRect(
                 position.x,
@@ -19,7 +19,9 @@ function render(context, scene, componentPool) {
                 renderable.width,
                 renderable.height
             );
-        } 
+        } else if (renderable.type === 'CIRCLE') {
+            context.fillCircle(position.x, position.y, renderable.width, renderable.color);
+        }
     }
 }
 
@@ -39,7 +41,6 @@ function collide(scene, componentPool) {
     const entities = getEntitiesWithComponents(scene, colliderMask);
     for(const e of entities) {
         const data = componentPool.getComponentData(e.id);
-        console.log(data);
         data[Collider.index].other.splice(0, data[Collider.index].other.length);
         const aabbA = {
             minX: data[Position.index].x,
