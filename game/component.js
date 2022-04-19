@@ -83,6 +83,22 @@ class Attack {
     }
 }
 
+class Player {
+    static flag = 1 << componentIndex;
+    static index = componentIndex++;
+}
+
+class Projectile {
+    static flag = 1 << componentIndex;
+    static index = componentIndex++;
+    constructor() {
+        this.x = 0;
+        this.y = 0;
+        this.speed = 0;
+    }
+}
+
+
 const componentFactory = {
     components: componentIndex,
 
@@ -96,7 +112,9 @@ const componentFactory = {
             new HealthDisplay(),
             new Dead(),
             new Lifetime(),
-            new Attack()
+            new Attack(),
+            new Player(),
+            new Projectile()
         ];
     }
 }

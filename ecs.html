@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html, body {
+            margin: 0;
+        }
+        body {
+            width: 100vw;
+        }
+        #canvas-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+    <script src="./array/queue.js"></script>
+    <script src="./canvas/canvas.js"></script>
+    <script src="./collision/collider.js"></script>
+    <script src="./math/helper.js"></script>
+    <script src="./math/vector.js"></script>
+    <script src="./game/entity.js"></script>
+    <script src="./game/component.js"></script>
+    <script src="./game/componentPool.js"></script>
+    <script src="./game/system.js"></script>
+    <script src="./input/keyboard.js"></script>
+    <script src="./input/mouse.js"></script>
+</head>
+<body>
+    <div id="canvas-container">
+
+    </div>
+    <script>
+        const pool = new ComponentPool(50, componentFactory);
+        const inputHandler = new KeyboardInput(document);
+        let scene = [];
+        canvas = document.createElement("canvas");
+	    canvas.width = 500;
+	    canvas.height = 500;
+	    context = canvas.getContext('2d');
+        document.getElementById('canvas-container').appendChild(canvas);
+        const mouseHandler = new MouseInput(canvas);
+
+        scene.push(entityFactory.makeCircle(pool, canvas.width/2, canvas.height/2, 240, "#C4BCA7"));
+        scene.push(entityFactory.makeCircle(pool, canvas.width/2, canvas.height/2, 220, "#383630"));
+        scene.push(entityFactory.makeCircle(pool, canvas.width/2, canvas.height/2, 218, "#C4BCA7"));
+        scene.push(entityFactory.makeCircle(pool, canvas.width/2, canvas.height/2, 210, "#383630"));
+        scene.push(entityFactory.makeCircle(pool, canvas.width/2, canvas.height/2, 205, "#9B7653"));
+        scene.push(entityFactory.makeRect(pool, 10, canvas.height/2 - 25, 40, 50, "#9B7653"));
+        scene.push(entityFactory.makeRect(pool, 500-50, canvas.height/2 - 25, 40, 50, "#9B7653"));
+        scene.push(entityFactory.makeRect(pool, canvas.width/2 - 25, 10, 50, 40, "#9B7653"));
+        scene.push(entityFactory.makeRect(pool, canvas.width/2 - 25, 500-50, 50, 40, "#9B7653"));
+
+
+        scene.push(entityFactory.makeRect(pool, 50, 50, 20, 20, "#FF0000"));
+        scene.push(entityFactory.makeCircle(pool, 80, 10, 5, "#0000FF"));
+        scene.push(entityFactory.makeMover(pool, 100, 100, 20, 20, "#FF0000", 2, 2));
+        scene.push(entityFactory.makePlayer(pool, canvas.width/2, canvas.height/2, 20, 20, "#00FF00", 0, 0));
+
+        scene.push(entityFactory.makeRectWithCollider(pool, 200, 50, 20, 20, "#FF0000"));
+        scene.push(entityFactory.makeRectWithCollider(pool, 200, 60, 20, 20, "#FF0000"));
+        scene.push(entityFactory.makeRectWithHealth(pool, 70, 200, 20, 20, "#FF0000", 0, -10, 20, 6, 500, "#00FF00"));
+        scene.push(entityFactory.makeAttack(pool, 75, 200, 5, 5, 20, true));
+        scene.push(entityFactory.makeBullet(pool, 200, 200, 5, 5, 10, 150, -1, 0, 1, "#F1E322"));
+        scene.push(entityFactory.makeBullet(pool, 200, 210, 5, 5, 10, 150, -1, 0, 1, "#F1E322"));
+        scene.push(entityFactory.makeBullet(pool, 200, 220, 5, 5, 10, 150, -1, 0, 1, "#F1E322"));
+        scene.push(entityFactory.makeBullet(pool, 200, 230, 5, 5, 10, 150, -1, 0, 1, "#F1E322"));
+
+ 
+        function draw() {
+            player(inputHandler.keyState, mouseHandler, scene, pool, entityFactory);
+            projectile(scene, pool);
+            move(scene, pool);
+            render(context, scene, pool);
+            collide(scene, pool);
+            health(scene, pool);
+            healthDisplay(context, scene, pool);
+            attack(scene, pool);
+            lifetime(scene, pool);
+            death(scene, pool);
+            setTimeout(()=>draw(), 1000/30);
+        }
+        draw();
+
+    </script>
+</body>
+</html>

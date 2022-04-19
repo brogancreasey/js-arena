@@ -33,6 +33,8 @@ function move(scene, componentPool) {
         const velocity = data[Velocity.index];
         position.x += velocity.x;
         position.y += velocity.y;
+        velocity.x = 0;
+        velocity.y = 0;
     }
 }
 
@@ -96,6 +98,17 @@ function healthDisplay(context, scene, componentPool) {
     }
 }
 
+function lifetime(scene, componentPool) {
+    const entities = getEntitiesWithComponents(scene, Lifetime.flag);
+    for(e of entities) {
+        const data = componentPool.getComponentData(e.id);
+        data[Lifetime.index].duration -=1;
+        if(data[Lifetime.index].duration <= 0){
+            e.addComponent(Dead.flag);
+        }
+    }
+}
+
 function death(scene, componentPool) {
     const entities = getEntitiesWithComponents(scene, Dead.flag);
     for(const e of entities){
@@ -112,13 +125,66 @@ function attack(scene, componentPool) {
         const data = componentPool.getComponentData(e.id);
         if(data[Collider.index].isColliding) {
             for(other of data[Collider.index].other) {
-                if(other.hasComponent(Health.flag)) {
-                    const otherData = componentPool.getComponentData(other.id);
-                    otherData[Health.index].current = (otherData[Health.index].current - data[Attack.index] >= 0) ? otherData[Health.index].current - data[Attack.index] : 0;
+                if(scene.find((el)=>el.id === other).hasComponent(Health.flag)) {
+                    console.log("Hit!");
+                    const otherData = componentPool.getComponentData(other);
+                    const currentHealth = otherData[Health.index].current;
+                    const damage = data[Attack.index].damage;
+                    const health = (currentHealth - damage > 0) ? currentHealth - damage : 0;
+                    otherData[Health.index].current = health;
                     if(!data[Attack.index].multi) break;
                 }
             }
+            e.addComponent(Dead.flag);
         }
     }
 }
 
+function player(keyState, mouseState, scene, componentPool, entityFactor) {
+    const playerMask = Velocity.flag | Player.flag;
+    const entities = getEntitiesWithComponents(scene, playerMask);
+    for(const e of entities) {
+        const data = componentPool.getComponentData(e.id);
+        let x = 0;
+        let y = 0;
+        if(keyState["KeyW"]) {
+            y -= 1;
+        }
+        if(keyState["KeyS"]) {
+            y += 1;
+        }
+        if(keyState["KeyA"]) {
+            x -= 1;
+        }
+        if(keyState["KeyD"]) {
+            x += 1;
+        }
+        const normalized = normalize(x, y);
+        data[Velocity.index].x = normalized.x;
+        data[Velocity.index].y = normalized.y;
+        if(mouseState.click) {
+            const pos = data[Position.index];
+            const dirX = mouseState.x - pos.x;
+            const dirY = mouseState.y - pos.y;
+            const dir = normalize(dirX, dirY);
+            scene.push(
+                entityFactory.makeBullet(
+                    pool, 
+                    data[Position.index].x, 
+                    data[Position.index].y,
+                    5, 5, 10, 150, dir.x, dir.y, 1, "#F1E322"));
+            mouseState.click = false;
+        }
+    }
+}
+
+function projectile(scene, componentPool) {
+    const projectileMask = Projectile.flag | Velocity.flag;
+    const entities = getEntitiesWithComponents(scene, projectileMask);
+    for(const e of entities) {
+        const data = componentPool.getComponentData(e.id);
+        const projectile = data[Projectile.index];
+        data[Velocity.index].x = projectile.x * projectile.speed;
+        data[Velocity.index].y = projectile.y * projectile.speed;
+    }
+}
